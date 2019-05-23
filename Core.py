@@ -1,12 +1,17 @@
 import os
+import sys
 import aiohttp
 import discord
 from EmojiGuardian import EmojiGuardian
 from discord.ext import commands
 
-token = os.environ["token"]
-if not token:
-    raise OSError("No token enviroment variable")
+try:
+    with Open("token.txt", "r") as f:
+        token = f.read()
+except:
+    print("Unable to open token.txt, did you place it in this directory?")
+    sys.exit(0)
+        
 
 bot = commands.Bot(command_prefix='>')
 
