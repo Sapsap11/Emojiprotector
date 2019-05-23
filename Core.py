@@ -6,7 +6,7 @@ from EmojiGuardian import EmojiGuardian
 from discord.ext import commands
 
 try:
-    with Open("token.txt", "r") as f:
+    with open("token.txt", "r") as f:
         token = f.read()
 except:
     print("Unable to open token.txt, did you place it in this directory?")
