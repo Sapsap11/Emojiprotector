@@ -15,6 +15,8 @@ except:
 
 bot = commands.Bot(command_prefix='>')
 
+# list of extensions to be loaded on startup
+cog_list = ["EmojiGuardian"]
 
 @bot.event
 async def on_ready():
@@ -25,35 +27,36 @@ async def on_ready():
     bot.summon_link = discord.utils.oauth_url(client_id=bot.user.id, permissions=permissions)
     print(f"logged in as {info.name}")
     print(f"owner_id is {bot.owner_id}")
-    bot.session = aiohttp.ClientSession()
-
-    for cog in bot.cogs:
-        bot.add_cog(bot.get_cog(cog))
+    for cog in cog_list:
+        bot.load_extension(cog)
 
 
 @bot.event
 async def on_command_error(ctx: commands.Context, error: commands.CommandError):
     print("\n[Command Error]")
     print(ctx.message.author)
+    print(error.args)
     print(ctx.message.content)
 
 
 @bot.command()
 async def load_cog(ctx: commands.context, cog: str):
-    if cog in bot.cogs:
-        bot.add_cog(bot.get_cog(cog))
+    try:
+        bot.load_extension(cog)
+        #bot.add_cog(bot.get_cog(cog))
         await ctx.send(f"{cog} loaded")
-    else:
+    except:
         await ctx.send(f"failed to load {cog}, are you sure it's a real cog?")
 
 
 @bot.command()
 async def reload_cog(ctx: commands.context, cog: str):
-    if cog in bot.cogs:
-        bot.remove_cog(bot.get_cog(cog))
-        bot.add_cog(bot.get_cog(cog))
+    try:
+        bot.reload_extension(cog)
+        #bot.remove_cog(bot.get_cog(cog))
+        #bot.add_cog(bot.get_cog(cog))
         await ctx.send(f"reloaded {cog}")
-    else:
+    except:
         await ctx.send(f"failed to reload {cog}, are you sure it's a real cog?")
 
 
@@ -64,14 +67,14 @@ async def echo(ctx, message: str = "hello"):
 
 @bot.command()
 async def show(ctx, url: str):
-    picture = await bot.session.get(url)
-
-    await ctx.send("thing", embed=picture)
+    embed = discord.Embed()
+    embed.add_field("Title", ctx.message.author.name)
+    embed.set_image(url)
+    await ctx.send(embed=embed)
 
 
 @bot.command()
 async def logout(ctx):
-    await bot.session.close()
     await ctx.send("logging out")
     await bot.logout()
 

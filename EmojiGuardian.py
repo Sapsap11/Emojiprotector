@@ -14,3 +14,6 @@ class EmojiGuardian(commands.Cog):
     async def fullreact(self, ctx: commands.context):
         for emoji in ctx.guild.emojis:
             await ctx.message.add_reaction(emoji)
+
+def setup(bot):
+    bot.add_cog(EmojiGuardian(bot))
